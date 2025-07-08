@@ -25,13 +25,11 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
         return document;
     }
     async findOneAndUpdate(
-        filterQuery: FilterQuery<TDocument>,
-        update: UpdateQuery<TDocument>
+        filterQuery: FilterQuery<TDocument>, update: UpdateQuery<TDocument>
     ): Promise<TDocument> {
-        const document = await this.model.findOneAndUpdate(filterQuery, update{
+        const document = await this.model.findOneAndUpdate(filterQuery, update, {
             new: true,
-        })
-            .lean<TDocument>(true);
+        }).lean<TDocument>(true);
         if (!document) {
             this.logger.warn("Document was not found with filterquery", filterQuery)
             throw new NotFoundException("Document was not found")
@@ -42,11 +40,11 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
         return this.model.find(filterQuery).lean<TDocument[]>(true);
     }
     async findAndDelete(filterQuery: FilterQuery<TDocument>): Promise<TDocument> {
-    const document = await this.model.findOneAndDelete(filterQuery).lean<TDocument | null>(true);
-    if (!document) {
-      this.logger.warn('Document was not found to delete', filterQuery);
-      throw new NotFoundException('Document was not found');
+        const document = await this.model.findOneAndDelete(filterQuery).lean<TDocument | null>(true);
+        if (!document) {
+            this.logger.warn('Document was not found to delete', filterQuery);
+            throw new NotFoundException('Document was not found');
+        }
+        return document;
     }
-    return document;
-  }
 }
